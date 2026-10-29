@@ -12,6 +12,7 @@ div.gallery-item {
   margin: 5px;
   border: 1px solid #ccc;
   width: 180px;
+  display: none; /* Hidden by default; JavaScript will show current page items */
 }
 
 div.gallery-item:hover {
@@ -27,14 +28,46 @@ div.gallery-item div.desc {
   padding: 15px;
   text-align: center;
 }
+
+/* Pagination UI Styles */
+.pagination {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.pagination button {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  margin: 0 4px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.pagination button:hover {
+  background-color: #ddd;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination button:disabled {
+  background-color: #f9f9f9;
+  color: #ccc;
+  cursor: not-allowed;
+}
 </style>
 </head>
 <body>
 
 <center><h2>Image Gallery</h2></center>
 
-<div class="gallery">
-
+<!-- Gallery Container -->
+<div class="gallery" id="gallery-container">
   <div class="gallery-item"><a href="../mobile_screenshots/mobile screenshots 2026-10-27 conv/mobile screenshots 2026-10-27 conv 0.jpeg"><img src="../mobile_screenshots/mobile screenshots 2026-10-27 conv/mobile screenshots 2026-10-27 conv 0.jpeg" alt="Forest" width="600" height="400"></a></div>
   
     <div class="gallery-item"><a href="../mobile_screenshots/mobile screenshots 2026-10-27 conv/mobile screenshots 2026-10-27 conv 0.jpeg"><img src="../mobile_screenshots/mobile screenshots 2026-10-27 conv/mobile screenshots 2026-10-27 conv 0.jpeg" alt="Forest" width="600" height="400"></a></div>
@@ -206,7 +239,53 @@ div.gallery-item div.desc {
 
 </div>
 
-</div>
+<div class="pagination" id="pagination-controls"></div> 	
+
+<script>
+  const itemsPerPage = 20; // Change this number to control how many images show per page
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const paginationContainer = document.getElementById('pagination-controls');
+  
+  let currentPage = 1;
+  const totalPages = Math.ceil(galleryItems.length / itemsPerPage);
+
+  function showPage(page) {
+    currentPage = page;
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+
+    // Show/Hide items based on current page
+    galleryItems.forEach((item, index) => {
+      if (index >= start && index < end) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    renderPaginationControls();
+  }
+
+  function renderPaginationControls() {
+    let html = '';
+
+    // Previous Button
+    html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="showPage(${currentPage - 1})">Previous</button>`;
+
+    // Page Number Buttons
+    for (let i = 1; i <= totalPages; i++) {
+      html += `<button class="${i === currentPage ? 'active' : ''}" onclick="showPage(${i})">${i}</button>`;
+    }
+
+    // Next Button
+    html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="showPage(${currentPage + 1})">Next</button>`;
+
+    paginationContainer.innerHTML = html;
+  }
+
+  // Initialize the first page load
+  showPage(1);
+</script>
 
 </body>
 </html>
